@@ -73,29 +73,6 @@ http://localhost/ProjetCovoit
 
 ---
 
-## 🧪 Test automatique
-
-Un script de test Python est fourni :
-```bash
-python test_projet_covoit_report.py
-```
-
-Ce script :
-- se connecte
-- teste les pages
-- vérifie les alertes
-- génère un rapport HTML (`rapport_test_covoit.html`)
-
----
-
-## 💻 Dépendances (pour les tests Python)
-
-```bash
-pip install requests beautifulsoup4
-```
-
----
-
 ## 📜 Licence
 
 MIT - libre d’usage et de modification.
