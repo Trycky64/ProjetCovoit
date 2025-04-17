@@ -1,0 +1,15 @@
+# Ignorer les dossiers Docker
+db_data/
+vendor/
+../.env
+
+# Ignorer les fichiers de configuration des IDE
+*.idea
+*.vscode
+
+# Ignorer les logs
+*.log
+
+# Ignorer les fichiers temporaires
+*.tmp
+*.cache
