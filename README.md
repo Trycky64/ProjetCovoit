@@ -32,8 +32,6 @@ Application web de covoiturage écrite en PHP, avec gestion des trajets, réserv
 git clone https://github.com/Foltry/ProjetCovoit.git
 ```
 
-> Remplace `TON_USER` par ton nom d’utilisateur GitHub si besoin.
-
 ---
 
 ### 3. Démarrer Apache & MySQL dans XAMPP
