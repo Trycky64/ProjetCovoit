@@ -29,7 +29,7 @@ Application web de covoiturage écrite en PHP, avec gestion des trajets, réserv
 ### 2. Cloner le projet dans `htdocs`
 
 ```bash
-git clone https://x-access-token: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@github.com/TON_USER/ProjetCovoit.git
+git clone https://github.com/Foltry/ProjetCovoit.git
 ```
 
 > Remplace `TON_USER` par ton nom d’utilisateur GitHub si besoin.
