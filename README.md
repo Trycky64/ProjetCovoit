@@ -18,25 +18,45 @@ Application web de covoiturage écrite en PHP, avec gestion des trajets, réserv
 
 ## 🔧 Installation locale (XAMPP)
 
-1. Clone ce dépôt dans ton dossier `htdocs` :
-   ```bash
-   git clone https://github.com/TON_USER/ProjetCovoit.git
-   ```
+### 1. Installer Git (si ce n’est pas déjà fait)
 
-2. Démarre Apache & MySQL dans XAMPP
+- Windows : https://git-scm.com/download/win
+- Mac : `brew install git`
+- Linux : `sudo apt install git`
 
-3. Accède à :
-   ```
-   http://localhost/ProjetCovoit/fixtures.php
-   ```
-   Cela va :
-   - Créer la base de données
-   - Insérer des utilisateurs et trajets de test
+---
 
-4. Va sur :
-   ```
-   http://localhost/ProjetCovoit
-   ```
+### 2. Cloner le projet dans `htdocs`
+
+```bash
+git clone https://x-access-token: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@github.com/TON_USER/ProjetCovoit.git
+```
+
+> Remplace `TON_USER` par ton nom d’utilisateur GitHub si besoin.
+
+---
+
+### 3. Démarrer Apache & MySQL dans XAMPP
+
+---
+
+### 4. Accéder à l’installation automatique
+
+Ouvre cette URL dans ton navigateur :
+
+```
+http://localhost/ProjetCovoit/fixtures.php
+```
+
+Cela va :
+- Créer la base de données
+- Insérer des utilisateurs et trajets de test
+
+Puis accède à :
+
+```
+http://localhost/ProjetCovoit
+```
 
 ---
 
@@ -73,12 +93,6 @@ Ce script :
 ```bash
 pip install requests beautifulsoup4
 ```
-
----
-
-## 🔒 Dépôt privé mais partageable
-
-Tu peux inviter des collaborateurs dans **Settings > Collaborators** sur GitHub.
 
 ---
 
