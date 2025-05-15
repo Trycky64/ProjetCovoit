@@ -5,10 +5,10 @@ function getPDO()
     static $pdo = null;
 
     if ($pdo === null) {
-        $host = 'localhost'; // The service name defined in docker-compose.yml
+        $host = 'localhost'; 
         $db = 'covoiturage'; // Database name
         $user = 'root'; // Default root user for MySQL
-        $pass = ''; // Password defined in docker-compose.yml
+        $pass = 'Thibault1965#'; 
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

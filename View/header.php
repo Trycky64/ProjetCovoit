@@ -27,7 +27,7 @@
     <title>Mon Application</title>
 
     <!-- Lien vers le fichier CSS Bootstrap local -->
-    <link rel="stylesheet" href="/ProjetCovoit/css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 
     <!-- Bootstrap JS et dépendances -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
