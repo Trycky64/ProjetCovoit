@@ -1,4 +1,5 @@
 <?php require 'header.php'; ?>
+
 <?php if (!empty($_SESSION['error'])): ?>
     <div class="container mt-3">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -29,6 +30,19 @@
         <p><strong>Heure :</strong> <?= htmlspecialchars($trip['time']); ?></p>
         <p><strong>Places disponibles :</strong> <?= htmlspecialchars($trip['seats']); ?></p>
         <p><strong>Prix :</strong> <?= htmlspecialchars($trip['price']); ?> €</p>
+
+        <?php if (!empty($tripStops)): ?>
+            <hr>
+            <h5>Étapes intermédiaires :</h5>
+            <ul class="list-group mb-3">
+                <?php foreach ($tripStops as $stop): ?>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span><?= htmlspecialchars($stop['location']); ?></span>
+                        <span class="text-muted"><?= htmlspecialchars($stop['stop_time']); ?></span>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
 
         <form action="index.php?page=reserve_trip" method="POST">
             <input type="hidden" name="trip_id" value="<?= htmlspecialchars($trip['id']); ?>">

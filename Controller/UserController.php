@@ -56,16 +56,48 @@ class UserController
             exit();
         }
 
-        $stmt = $this->pdo->prepare('SELECT t.departure, t.arrival, r.seats_reserved, t.date, t.time 
-                                      FROM trips t 
-                                      JOIN reservations r ON t.id = r.trip_id 
-                                      WHERE r.user_id = ?');
-        $stmt->execute([$_SESSION['user_id']]);
+        $userId = $_SESSION['user_id'];
+
+        // Vérifier si l'utilisateur est banni
+        $stmt = $this->pdo->prepare("SELECT banned FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch();
+
+        if ($user && $user['banned']) {
+            session_destroy();
+            header("Location: index.php?page=login");
+            exit;
+        }
+
+        // Récupérer les trajets + emails de chauffeurs
+        $stmt = $this->pdo->prepare('
+        SELECT t.departure, t.arrival, r.seats_reserved, t.date, t.time,
+               t.driver_id, u.email AS driver_email
+        FROM reservations r
+        JOIN trips t ON r.trip_id = t.id
+        JOIN users u ON t.driver_id = u.id
+        WHERE r.user_id = ?
+    ');
+        $stmt->execute([$userId]);
         $trips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        require_once __DIR__ . '/../View/trip_history.php';
-    }
+        // Récupérer les favoris
+        $favoriteDrivers = User::getPreferredDrivers($this->pdo, $userId);
+        $favoriteDriverIds = array_column($favoriteDrivers, 'id');
 
+        // Récupérer les chauffeurs déjà notés
+        $stmt = $this->pdo->prepare("SELECT reviewed_id FROM reviews WHERE reviewer_id = ?");
+        $stmt->execute([$userId]);
+        $alreadyReviewedDriverIds = array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'reviewed_id');
+
+        $_SESSION['trip_history'] = [
+            'trips' => $trips,
+            'favoriteDriverIds' => $favoriteDriverIds,
+            'alreadyReviewedDriverIds' => $alreadyReviewedDriverIds
+        ];
+
+        require __DIR__ . '/../View/trip_history.php';
+    }
     public function adminPanel()
     {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {

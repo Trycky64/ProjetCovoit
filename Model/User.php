@@ -12,14 +12,12 @@ class User
         $this->password = password_hash($password, PASSWORD_BCRYPT);
     }
 
-    // Créer un nouvel utilisateur
     public static function createUser($pdo, $user)
     {
         $stmt = $pdo->prepare('INSERT INTO users (email, password) VALUES (?, ?)');
         return $stmt->execute([$user->email, $user->password]);
     }
 
-    // Authentifier un utilisateur
     public static function authenticate($pdo, $email, $password)
     {
         $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
@@ -33,7 +31,6 @@ class User
         return false;
     }
 
-    // Récupérer un utilisateur par ID
     public static function getUserById($pdo, $userId)
     {
         $stmt = $pdo->prepare('SELECT * FROM users WHERE id = :userId');
@@ -42,10 +39,20 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Mettre à jour les informations utilisateur
     public static function updateUser($pdo, $user)
     {
         $stmt = $pdo->prepare('UPDATE users SET email = ?, password = ? WHERE id = ?');
         return $stmt->execute([$user->email, $user->password, $user->id]);
+    }
+
+    public static function getPreferredDrivers(PDO $pdo, int $userId): array {
+        $stmt = $pdo->prepare("
+            SELECT u.*
+            FROM users u
+            JOIN preferred_drivers pd ON u.id = pd.driver_id
+            WHERE pd.user_id = :user_id
+        ");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetchAll();
     }
 }

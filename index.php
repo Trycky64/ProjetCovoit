@@ -60,21 +60,39 @@ switch ($page) {
     case 'trip_details':
         require_once __DIR__ . '/Controller/TripDetailsController.php';
         break;
+
     case 'notifications':
-        require_once 'Controller/UserController.php';
+        require_once __DIR__ . '/Controller/UserController.php';
         (new UserController())->showNotifications();
         break;
+
     case 'trip_history':
-        require_once 'Controller/UserController.php';
+        require_once __DIR__ . '/Controller/UserController.php';
         (new UserController())->showTripHistory();
         break;
+
     case 'admin':
-        require_once 'Controller/UserController.php';
+        require_once __DIR__ . '/Controller/UserController.php';
         (new UserController())->adminPanel();
         break;
 
+    case 'add_favorite':
+        require_once __DIR__ . '/Controller/AddFavoriteController.php';
+        break;
+
+    case 'remove_favorite':
+        require_once __DIR__ . '/Controller/RemoveFavoriteController.php';
+        break;
+
+    case 'review_driver':
+        require_once __DIR__ . '/Controller/ReviewController.php';
+        break;
+
+    case 'fixtures':
+        require_once __DIR__ . '/fixtures.php';
+        break;
+
     default:
-        // Si la page demandée n'existe pas, afficher la page d'accueil
         require_once __DIR__ . '/Controller/HomeController.php';
         break;
 }

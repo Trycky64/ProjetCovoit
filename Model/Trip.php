@@ -8,8 +8,9 @@ class Trip
     private $seats;
     private $price;
     private $driver_id;
+    private $estimated_arrival_time;
 
-    public function __construct($departure, $arrival, $date, $time, $seats, $price, $driver_id)
+    public function __construct($departure, $arrival, $date, $time, $seats, $price, $driver_id, $estimated_arrival_time)
     {
         $this->departure = $departure;
         $this->arrival = $arrival;
@@ -18,24 +19,29 @@ class Trip
         $this->seats = $seats;
         $this->price = $price;
         $this->driver_id = $driver_id;
+        $this->estimated_arrival_time = $estimated_arrival_time;
     }
 
-    // Créer un nouveau trajet
     public static function create($pdo, $trip)
     {
-        $stmt = $pdo->prepare('INSERT INTO trips (departure, arrival, date, time, seats, price, driver_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
-        return $stmt->execute([
+        $stmt = $pdo->prepare('
+            INSERT INTO trips (departure, arrival, date, time, seats, price, driver_id, estimated_arrival_time) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([
             $trip->departure,
             $trip->arrival,
             $trip->date,
             $trip->time,
             $trip->seats,
             $trip->price,
-            $trip->driver_id
+            $trip->driver_id,
+            $trip->estimated_arrival_time
         ]);
+
+        return $pdo->lastInsertId();
     }
 
-    // Récupérer les trajets créés par l'utilisateur
     public static function getTripsByUser($pdo, $userId)
     {
         $stmt = $pdo->prepare('SELECT * FROM trips WHERE driver_id = :userId');
@@ -44,19 +50,19 @@ class Trip
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Récupérer les trajets réservés par l'utilisateur
     public static function getReservedTripsByUser($pdo, $userId)
     {
-        $stmt = $pdo->prepare('SELECT t.*, r.seats_reserved, r.id AS reservation_id 
-                               FROM trips t
-                               INNER JOIN reservations r ON t.id = r.trip_id
-                               WHERE r.user_id = :userId');
+        $stmt = $pdo->prepare('
+            SELECT t.*, r.seats_reserved, r.id AS reservation_id 
+            FROM trips t
+            INNER JOIN reservations r ON t.id = r.trip_id
+            WHERE r.user_id = :userId
+        ');
         $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Supprimer un trajet créé par l'utilisateur
     public static function deleteTrip($pdo, $tripId, $userId)
     {
         $stmt = $pdo->prepare('DELETE FROM trips WHERE id = :trip_id AND driver_id = :user_id');
@@ -65,7 +71,6 @@ class Trip
         return $stmt->execute();
     }
 
-    // Annuler une réservation
     public static function cancelReservation($pdo, $reservationId, $userId)
     {
         $stmt = $pdo->prepare('DELETE FROM reservations WHERE id = :reservation_id AND user_id = :user_id');
@@ -74,7 +79,6 @@ class Trip
         return $stmt->execute();
     }
 
-    // Récupérer les détails d'un trajet
     public static function getTripById($pdo, $tripId)
     {
         $stmt = $pdo->prepare('SELECT * FROM trips WHERE id = :trip_id');
@@ -83,7 +87,6 @@ class Trip
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Rechercher des trajets
     public static function searchTrips($pdo, $departure, $arrival, $date)
     {
         if (empty($date)) {
@@ -97,7 +100,6 @@ class Trip
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Réserver un trajet
     public static function reserveTrip($pdo, $tripId, $userId, $seatsReserved)
     {
         $stmt = $pdo->prepare('SELECT driver_id FROM trips WHERE id = ?');
@@ -111,5 +113,4 @@ class Trip
         $stmt = $pdo->prepare('INSERT INTO reservations (trip_id, user_id, seats_reserved) VALUES (?, ?, ?)');
         return $stmt->execute([$tripId, $userId, $seatsReserved]);
     }
-
 }

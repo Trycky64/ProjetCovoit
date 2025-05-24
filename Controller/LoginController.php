@@ -1,25 +1,35 @@
 <?php
-require_once __DIR__ . '/../Model/User.php';
 require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../Model/User.php';
 
-// Vérifier si une session est déjà active avant de démarrer une nouvelle session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+$pdo = getPDO();
 
-    $pdo = getPDO();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+
     $user = User::authenticate($pdo, $email, $password);
 
     if ($user) {
+        if ($user['banned']) {
+            $_SESSION['error'] = "Votre compte a été banni.";
+            header("Location: index.php?page=login");
+            exit;
+        }
+
         $_SESSION['user_id'] = $user['id'];
-        header('Location: index.php?page=dashboard');
-        exit();
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['success'] = "Connexion réussie.";
+        header("Location: index.php?page=dashboard");
+        exit;
     } else {
-        $error = "Identifiants incorrects.";
+        $_SESSION['error'] = "Identifiants incorrects.";
+        header("Location: index.php?page=login");
+        exit;
     }
 }
 

@@ -35,7 +35,29 @@
             <label for="date">Date :</label>
             <input type="date" class="form-control" id="date" name="date">
         </div>
-        <button type="submit" class="btn btn-primary">Rechercher</button>
+
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" id="filter_by_driver" name="filter_by_driver">
+            <label class="form-check-label" for="filter_by_driver">
+                Filtrer par chauffeur
+            </label>
+        </div>
+
+        <div class="form-group mt-2" id="driver_field" style="display: none;">
+            <label for="driver_name">Nom du chauffeur :</label>
+            <input type="text" class="form-control" id="driver_name" name="driver_name">
+        </div>
+
+        <?php if (!empty($_SESSION['user'])): ?>
+            <div class="form-check mt-2">
+                <input class="form-check-input" type="checkbox" name="only_preferred" id="only_preferred" value="1">
+                <label class="form-check-label" for="only_preferred">
+                    Afficher uniquement les trajets de mes chauffeurs préférés
+                </label>
+            </div>
+        <?php endif; ?>
+
+        <button type="submit" class="btn btn-primary mt-3">Rechercher</button>
     </form>
 
     <?php if (!empty($trips)): ?>
@@ -49,6 +71,7 @@
                 <th>Heure</th>
                 <th>Places disponibles</th>
                 <th>Prix (€)</th>
+                <th>Chauffeur</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -61,13 +84,24 @@
                     <td><?= htmlspecialchars($trip['time']); ?></td>
                     <td><?= htmlspecialchars($trip['seats']); ?></td>
                     <td><?= htmlspecialchars($trip['price']); ?></td>
+                    <td><?= htmlspecialchars($trip['driver_name']); ?></td>
                     <td><a href="index.php?page=trip_details&trip_id=<?= $trip['id']; ?>" class="btn btn-info">Détails</a></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
-
     <?php elseif ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
         <div class="alert alert-warning mt-5">Aucun trajet trouvé pour votre recherche.</div>
     <?php endif; ?>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkbox = document.getElementById('filter_by_driver');
+        const driverField = document.getElementById('driver_field');
+
+        checkbox.addEventListener('change', function () {
+            driverField.style.display = this.checked ? 'block' : 'none';
+        });
+    });
+</script>

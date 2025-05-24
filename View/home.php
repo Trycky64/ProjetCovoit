@@ -25,7 +25,7 @@
     <p>Ceci est la page d'accueil de l'application.</p>
 
     <!-- Bouton Bootstrap vers fixtures.php -->
-    <a href="/fixtures.php" class="btn btn-warning mt-4">
+    <a href="../index.php?page=fixtures" class="btn btn-warning mt-4">
         Initialiser la base de données (fixtures)
     </a>
 
