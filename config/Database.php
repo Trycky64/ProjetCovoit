@@ -7,8 +7,8 @@ function getPDO()
     if ($pdo === null) {
         $host = 'localhost'; 
         $db = 'covoiturage'; // Database name
-        $user = 'quentin';
-        $pass = 'motdepasse123';;
+        $user = 'root';
+        $pass = 'Thibault1965#';;
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

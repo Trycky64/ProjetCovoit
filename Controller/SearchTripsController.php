@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $driverName = $_POST['driver_name'];
     $onlyPreferred = isset($_POST['only_preferred']) && $_POST['only_preferred'] == 1;
 
-    $query = "SELECT t.*, u.name AS driver_name 
+    $query = "SELECT t.*, u.email AS driver_name 
               FROM trips t 
               JOIN users u ON t.driver_id = u.id 
               WHERE 1";
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!empty($driverName)) {
-        $query .= " AND u.name LIKE ?";
+        $query .= " AND u.email LIKE ?";
         $params[] = "%$driverName%";
     }
 

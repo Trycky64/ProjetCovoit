@@ -71,13 +71,13 @@ class UserController
 
         // Récupérer les trajets + emails de chauffeurs
         $stmt = $this->pdo->prepare('
-        SELECT t.departure, t.arrival, r.seats_reserved, t.date, t.time,
-               t.driver_id, u.email AS driver_email
-        FROM reservations r
-        JOIN trips t ON r.trip_id = t.id
-        JOIN users u ON t.driver_id = u.id
-        WHERE r.user_id = ?
-    ');
+            SELECT t.departure, t.arrival, r.seats_reserved, t.date, t.time,
+                   t.driver_id, u.email AS driver_email
+            FROM reservations r
+            JOIN trips t ON r.trip_id = t.id
+            JOIN users u ON t.driver_id = u.id
+            WHERE r.user_id = ?
+        ');
         $stmt->execute([$userId]);
         $trips = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -96,15 +96,6 @@ class UserController
             'alreadyReviewedDriverIds' => $alreadyReviewedDriverIds
         ];
 
-        require __DIR__ . '/../View/trip_history.php';
-    }
-    public function adminPanel()
-    {
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-            header('Location: index.php?page=login');
-            exit();
-        }
-
-        require_once __DIR__ . '/../View/admin_panel.php';
+        require_once __DIR__ . '/../View/trip_history.php';
     }
 }

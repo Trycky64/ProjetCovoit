@@ -11,7 +11,7 @@ $pdo = getPDO();
 
 // Réinitialisation
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
-$pdo->exec("DROP TABLE IF EXISTS trip_stops, reviews, notifications, reservations, trips, users");
+$pdo->exec("DROP TABLE IF EXISTS trip_stops, reviews, notifications, reservations, preferred_drivers, trips, users");
 $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
 // Recréation des tables
@@ -64,6 +64,15 @@ $pdo->exec("CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (reviewer_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (reviewed_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+$pdo->exec("ALTER TABLE reviews ADD CONSTRAINT unique_review UNIQUE (reviewer_id, reviewed_id)");
+
+$pdo->exec("CREATE TABLE preferred_drivers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    driver_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (driver_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
 $pdo->exec("CREATE TABLE trip_stops (
@@ -118,21 +127,27 @@ for ($i = 0; $i < 20; $i++) {
         do {
             $location = $cities[array_rand($cities)];
         } while (in_array($location, [$departure, $arrival]));
-        $stop_time = date('H:i:s', strtotime($time) + ($j * 1800)); // toutes les 30 min
+        $stop_time = date('H:i:s', strtotime($time) + ($j * 1800));
         $pdo->prepare("INSERT INTO trip_stops (trip_id, location, stop_time) VALUES (?, ?, ?)")
             ->execute([$tripId, $location, $stop_time]);
     }
 }
 
-// Réservations aléatoires
+// Réservations aléatoires avec vérification des places
 for ($i = 1; $i <= 5; $i++) {
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->execute(["testuser{$i}@example.com"]);
     $user = $stmt->fetch();
 
-    $trip = $pdo->query("SELECT id FROM trips ORDER BY RAND() LIMIT 1")->fetch();
-    $pdo->prepare("INSERT INTO reservations (trip_id, user_id, seats_reserved) VALUES (?, ?, ?)")
-        ->execute([$trip['id'], $user['id'], rand(1, 2)]);
+    $trip = $pdo->query("SELECT id, seats FROM trips ORDER BY RAND() LIMIT 1")->fetch();
+    $usedSeats = $pdo->query("SELECT SUM(seats_reserved) as total FROM reservations WHERE trip_id = {$trip['id']}")->fetch();
+    $remainingSeats = $trip['seats'] - ($usedSeats['total'] ?? 0);
+    $seatsWanted = rand(1, 2);
+
+    if ($seatsWanted <= $remainingSeats) {
+        $pdo->prepare("INSERT INTO reservations (trip_id, user_id, seats_reserved) VALUES (?, ?, ?)")
+            ->execute([$trip['id'], $user['id'], $seatsWanted]);
+    }
 }
 
 // Notifications
@@ -159,9 +174,13 @@ foreach ($reviews as [$rev, $target, $note, $com]) {
     $reviewer = $stmt->fetch();
     $stmt->execute([$target]);
     $reviewed = $stmt->fetch();
+
     $pdo->prepare("INSERT INTO reviews (reviewer_id, reviewed_id, rating, comment) VALUES (?, ?, ?, ?)")
         ->execute([$reviewer['id'], $reviewed['id'], $note, $com]);
 }
+
+// Favoris
+$pdo->exec("INSERT INTO preferred_drivers (user_id, driver_id) VALUES (2, 3), (3, 2), (4, 2)");
 
 $_SESSION['success'] = "Base de données réinitialisée avec succès.";
 header("Location: index.php?page=home");
